@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using ToDo.Entity;
 using ToDo.Repository;
@@ -99,6 +100,37 @@ namespace ToDo
 		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 
+		}
+
+		private void makeSound_Click(object sender, EventArgs e)
+		{
+			Form soundForm = new Form
+			{
+				Width = Screen.PrimaryScreen.Bounds.Width
+			};
+
+			LiveStockEntity liveStockEntity = repository.GetAll();
+			Cow cow = new Cow();
+			Sheep sheep = new Sheep();
+			Goat goat = new Goat();
+			string sound = "";
+			for (int i = 0; i < liveStockEntity.CowNumber; i++) {
+				sound += cow.MakeSound();
+			}
+			for (int i = 0; i < liveStockEntity.SheepNumber; i++) {
+				sound += sheep.MakeSound();
+			}
+			for (int i = 0; i < liveStockEntity.GoatNumber; i++) {
+				sound += goat.MakeSound();
+			}
+			Label label = new Label
+			{
+				Text = sound,
+				Width = soundForm.Width
+			};
+
+			soundForm.Controls.Add(label);
+			soundForm.ShowDialog();
 		}
 	}
 }

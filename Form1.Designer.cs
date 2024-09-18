@@ -82,6 +82,7 @@
 			this.makeSound.TabIndex = 5;
 			this.makeSound.Text = "Kêu";
 			this.makeSound.UseVisualStyleBackColor = true;
+			this.makeSound.Click += new System.EventHandler(this.makeSound_Click);
 			// 
 			// analyzeBtn
 			// 
