@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using ToDo.Entity;
 
 namespace ToDo.Repository
@@ -41,15 +42,14 @@ namespace ToDo.Repository
 				string query = "SELECT * FROM livestock";
 				SqlCommand command = new SqlCommand(query, TheConnection);
 				SqlDataReader reader = command.ExecuteReader();
-				while (reader.Read())
-				{
-					object cow = reader["cow"];
-					object sheep = reader["sheep"];
-					object goat = reader["goat"];
-					liveStock.CowNumber = (int)cow;
-					liveStock.SheepNumber = (int)sheep;
-					liveStock.GoatNumber = (int)goat;
-				}
+				reader.Read();
+				object cow = reader["cow"];
+				object sheep = reader["sheep"];
+				object goat = reader["goat"];
+				liveStock.CowNumber = (int)cow;
+				liveStock.SheepNumber = (int)sheep;
+				liveStock.GoatNumber = (int)goat;
+				reader.Close();
 				return liveStock;
 			}
 			catch (Exception ex)
@@ -59,5 +59,18 @@ namespace ToDo.Repository
 			TheConnection.Close();
 			return liveStock;
 		}
+		public void Save(int cow, int sheep, int goat)
+		{
+
+			TheConnection.Open();
+			string query = "UPDATE livestock SET cow = @cow, sheep = @sheep, goat = @goat";
+			SqlCommand command = new SqlCommand(query, TheConnection);
+			command.Parameters.AddWithValue("@cow", cow);
+			command.Parameters.AddWithValue("@sheep", sheep);
+			command.Parameters.AddWithValue("@goat", goat);
+			command.ExecuteNonQuery();
+			TheConnection.Close();
+		}
+
 	}
 }
