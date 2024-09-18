@@ -30,46 +30,73 @@ namespace ToDo.Repository
 		private BaseRepository(string connectionString)
 		{
 			TheConnection = new SqlConnection(connectionString);
-			TheConnection = new SqlConnection(connectionString);
 		}
-
 		public LiveStockEntity GetAll()
 		{
 			LiveStockEntity liveStock = new LiveStockEntity();
+
 			try
 			{
-				TheConnection.Open();
+				if (TheConnection.State != System.Data.ConnectionState.Open)
+				{
+					TheConnection.Open();
+				}
+
 				string query = "SELECT * FROM livestock";
 				SqlCommand command = new SqlCommand(query, TheConnection);
 				SqlDataReader reader = command.ExecuteReader();
-				reader.Read();
-				object cow = reader["cow"];
-				object sheep = reader["sheep"];
-				object goat = reader["goat"];
-				liveStock.CowNumber = (int)cow;
-				liveStock.SheepNumber = (int)sheep;
-				liveStock.GoatNumber = (int)goat;
+
+				if (reader.Read())
+				{
+					liveStock.CowNumber = (int)reader["cow"];
+					liveStock.SheepNumber = (int)reader["sheep"];
+					liveStock.GoatNumber = (int)reader["goat"];
+				}
+
 				reader.Close();
-				return liveStock;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message); // Better to log the error in a real application
+			}
+			finally
+			{
+				if (TheConnection.State == System.Data.ConnectionState.Open)
+				{
+					TheConnection.Close();
+				}
+			}
+
+			return liveStock;
+		}
+
+		public void Save(int cow, int sheep, int goat)
+		{
+			try
+			{
+				if (TheConnection.State != System.Data.ConnectionState.Open)
+				{
+					TheConnection.Open();
+				}
+
+				string query = "UPDATE livestock SET cow = @cow, sheep = @sheep, goat = @goat";
+				SqlCommand command = new SqlCommand(query, TheConnection);
+				command.Parameters.AddWithValue("@cow", cow);
+				command.Parameters.AddWithValue("@sheep", sheep);
+				command.Parameters.AddWithValue("@goat", goat);
+				command.ExecuteNonQuery();
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex.Message);
 			}
-			TheConnection.Close();
-			return liveStock;
-		}
-		public void Save(int cow, int sheep, int goat)
-		{
-
-			TheConnection.Open();
-			string query = "UPDATE livestock SET cow = @cow, sheep = @sheep, goat = @goat";
-			SqlCommand command = new SqlCommand(query, TheConnection);
-			command.Parameters.AddWithValue("@cow", cow);
-			command.Parameters.AddWithValue("@sheep", sheep);
-			command.Parameters.AddWithValue("@goat", goat);
-			command.ExecuteNonQuery();
-			TheConnection.Close();
+			finally
+			{
+				if (TheConnection.State == System.Data.ConnectionState.Open)
+				{
+					TheConnection.Close();
+				}
+			}
 		}
 
 	}

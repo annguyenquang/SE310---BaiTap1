@@ -17,7 +17,7 @@ namespace ToDo
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			BaseRepository.GetInstance(connectionString);
+			repository = BaseRepository.GetInstance(connectionString);
 		}
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
@@ -38,9 +38,9 @@ namespace ToDo
 			Cow cow = new Cow();
 			Sheep sheep = new Sheep();
 			Goat goat = new Goat();
-			int totalCow = 0;
-			int totalSheep = 0;
-			int totalGoat = 0;
+			int totalCow = liveStockEntity.CowNumber;
+			int totalSheep = liveStockEntity.SheepNumber;
+			int totalGoat = liveStockEntity.GoatNumber;
 			for(int i = 0; i < liveStockEntity.CowNumber;i++)
 			{
 				totalCow += cow.GiveBirth();
@@ -74,12 +74,12 @@ namespace ToDo
 				Width = 50,
 				Height = 50,
 			};
-
 			newForm.Controls.Add(goatLable);	
 			newForm.Controls.Add(sheepLable);	
 			newForm.Controls.Add(cowLable);	
 		
 			newForm.Show();
+			repository.Save(totalCow, totalSheep, totalGoat);
 		}
 
 		private void button2_Click(object sender, EventArgs e)
